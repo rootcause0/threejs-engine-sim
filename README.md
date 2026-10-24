@@ -38,18 +38,27 @@ page.
 
 ### Deploy to GitHub Pages
 
-The repo ships a workflow at `.github/workflows/deploy.yml`. Push the project to
-GitHub and enable it once:
+```bash
+npm run deploy     # build + force-push dist/ to the gh-pages branch
+```
 
-1. **Settings → Pages → Build and deployment → Source: GitHub Actions.**
-2. Push to `main` (or run the workflow manually from the Actions tab).
+One-time, in the repo: **Settings → Pages → Source: Deploy from a branch →
+`gh-pages` → `/ (root)` → Save.**
 
-The site goes live at `https://<user>.github.io/<repo>/`. Nothing else to
-configure — no base path, no branch juggling, and every asset is procedural, so
-there are no CORS or CDN surprises.
+The site then lives at `https://<user>.github.io/<repo>/` and every later
+`npm run deploy` updates it. This path needs no CI, no Actions minutes, and no
+secrets — it is just a branch of static files.
 
-Prefer doing it by hand? `npm run build`, then publish the contents of `dist/` to
-a `gh-pages` branch (a `.nojekyll` marker is already emitted into the build).
+`.github/workflows/deploy.yml` is there as well, for anyone who prefers CI:
+set **Settings → Pages → Source: GitHub Actions** and push to `main`. It does the
+same build and deploy, and cancels superseded runs. (Note that Actions requires a
+GitHub account in good billing standing — a locked account fails at the job level
+before any step runs. The branch route above is unaffected.)
+
+`dist/` uses relative asset URLs (`base: './'`), so it works at a domain root, in
+a subfolder, or on a project page, and `.nojekyll` is emitted so no branch
+processing interferes. Every asset is procedural, so there are no CORS or CDN
+surprises either way.
 
 ## What's in the scene
 
