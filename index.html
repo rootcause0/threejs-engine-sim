@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0b0c" />
+    <title>V8 Cross-Plane — Dynamic Test Cell</title>
+    <script type="module" crossorigin src="./assets/index-2mcoefnl.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B2dL9ynj.css">
+  </head>
+  <body>
+    <div id="app">
+      <div id="viewport"></div>
+
+      <div class="screen-fx" aria-hidden="true"></div>
+
+      <header class="hud header">
+        <div class="brand">
+          <div class="brand-glyph" aria-hidden="true">
+            <svg viewBox="0 0 44 44" fill="none">
+              <path d="M6 8h9l7 22 7-22h9L26 40h-8L6 8Z" stroke="currentColor" stroke-width="2.2" />
+              <path d="M16 17h12" stroke="currentColor" stroke-width="2.2" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="eyebrow"><i></i> DYNAMOMETER TEST CELL 03</div>
+            <h1>V8 <span>//</span> CROSS&#8209;PLANE</h1>
+            <div class="sub">5.0 L &nbsp;·&nbsp; 90° V8 &nbsp;·&nbsp; DOHC 32V &nbsp;·&nbsp; NATURALLY ASPIRATED</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="hud telemetry" id="telemetry">
+        <div class="tel-top">
+          <span class="label">ENGINE SPEED</span>
+          <span class="state-pill" id="state-pill"><i></i><span id="state-text">STANDBY</span></span>
+        </div>
+        <div class="rpm"><span id="rpm-value">0000</span><span class="unit">rpm</span></div>
+        <div class="tach" aria-hidden="true">
+          <div class="tach-ticks"></div>
+          <div class="tach-track"><div class="tach-fill" id="tach-fill"></div></div>
+          <div class="tach-scale"><span>0</span><span>1</span><span>2</span><span>3</span><span>4k</span></div>
+        </div>
+        <div class="tel-grid">
+          <div><span class="k">CRANK</span><span class="v" id="crank-angle">000.0°</span></div>
+          <div><span class="k">CAMSHAFT</span><span class="v" id="cam-angle">000.0°</span></div>
+          <div><span class="k">CYCLE</span><span class="v" id="cycle-state">—</span></div>
+        </div>
+        <div class="stroke-block">
+          <span class="label">CYLINDER STROKE</span>
+          <div class="strokes" id="stroke-indicators"></div>
+          <div class="stroke-legend"><span class="s-intake">Intake</span><span class="s-comp">Compression</span><span class="s-power">Power</span><span class="s-exh">Exhaust</span></div>
+        </div>
+      </section>
+
+      <aside class="hud inspector" id="inspector">
+        <div class="insp-head">
+          <span class="label">INSPECTION</span>
+          <span class="tag" id="insp-tag">SELECT A COMPONENT</span>
+        </div>
+        <h2 id="insp-title">Engine Assembly</h2>
+        <p id="insp-body">Click any component of the engine or test stand to identify it. Drag to orbit, scroll to zoom.</p>
+        <div class="insp-meta" id="insp-meta"></div>
+        <button class="insp-clear" id="insp-clear" hidden>Clear selection</button>
+      </aside>
+
+      <div class="hud mode-hint" id="mode-hint">
+        <span class="dot"></span><span id="hint-text">DRAG TO ORBIT&nbsp;&nbsp;·&nbsp;&nbsp;SCROLL TO ZOOM</span>
+      </div>
+
+      <div class="crosshair" id="crosshair" aria-hidden="true"></div>
+
+      <div class="dock-wrap">
+        <div class="hud dock">
+          <button class="btn power" id="power-btn" data-action="power">
+            <svg class="ico" viewBox="0 0 24 24" fill="none"><path d="M12 3v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span class="power-text"><b>START</b><small>ENGINE</small></span>
+          </button>
+
+          <div class="divider"></div>
+
+          <div class="rpm-control">
+            <div class="rpm-row"><label for="rpm-slider">SPEED SETPOINT</label><output id="rpm-output">850</output></div>
+            <input type="range" id="rpm-slider" min="0" max="4000" step="10" value="850" aria-label="Engine speed setpoint" />
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="tool-group">
+            <button class="btn tool" data-toggle="cutaway" id="cutaway-btn">
+              <svg class="ico" viewBox="0 0 24 24" fill="none"><path d="M12 4 3.5 8.5 12 13l8.5-4.5L12 4Z" stroke="currentColor" stroke-width="1.6"/><path d="m3.5 12 8.5 4.5 8.5-4.5M3.5 15.5 12 20l8.5-4.5" stroke="currentColor" stroke-width="1.6" opacity=".45"/></svg>
+              <span>CUTAWAY</span><i class="led"></i>
+            </button>
+            <button class="btn tool" data-toggle="explode" id="explode-btn">
+              <svg class="ico" viewBox="0 0 24 24" fill="none"><path d="M12 3v5M12 16v5M4 7.5l4.2 2.4M15.8 14.1 20 16.5M20 7.5l-4.2 2.4M8.2 14.1 4 16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>
+              <span id="explode-label">EXPLODED</span><i class="led"></i>
+            </button>
+            <button class="btn tool" data-toggle="slowmo" id="slowmo-btn">
+              <svg class="ico" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 13V9M12 13l3 1.8M9 3h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span>SLOW&#8209;MO</span><i class="led"></i>
+            </button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="view-group">
+            <div class="segmented" role="group" aria-label="Camera mode">
+              <button data-mode="orbit" class="active">ORBIT</button>
+              <button data-mode="walk">WALK</button>
+            </div>
+            <button class="btn ghost" data-action="reset" title="Reset camera (R)">
+              <svg class="ico" viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 1 1-2.3-5.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M20 4v5h-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>RESET</span>
+            </button>
+          </div>
+        </div>
+        <div class="dock-caption"><span>SLOW&#8209;MO ×0.22</span><span>WASD WALK</span><span>R RESET</span><span>1&nbsp;/&nbsp;2&nbsp;/&nbsp;3 VIEWS</span></div>
+      </div>
+
+      <div class="hud toast" id="toast" hidden></div>
+    </div>
+
+  </body>
+</html>
